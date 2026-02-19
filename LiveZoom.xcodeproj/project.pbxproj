@@ -14,6 +14,7 @@ A10004 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20
 A10005 /* ZoomEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20005 /* ZoomEngine.swift */; };
 A10006 /* DrawingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20006 /* DrawingEngine.swift */; };
 		A10010 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20010 /* PreferencesWindowController.swift */; };
+		A10011 /* UpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20011 /* UpdateManager.swift */; };
 A10007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20007 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@ A20001 /* LiveZoomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = so
 A20002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 A20003 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		A20010 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
+		A20011 /* UpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateManager.swift; sourceTree = "<group>"; };
 A20004 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 A20005 /* ZoomEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomEngine.swift; sourceTree = "<group>"; };
 A20006 /* DrawingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingEngine.swift; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@ A20001 /* LiveZoomApp.swift */,
 A20002 /* AppDelegate.swift */,
 A20003 /* StatusBarController.swift */,
 				A20010 /* PreferencesWindowController.swift */,
+				A20011 /* UpdateManager.swift */,
 A20004 /* HotkeyManager.swift */,
 A20005 /* ZoomEngine.swift */,
 A20006 /* DrawingEngine.swift */,
@@ -148,6 +151,7 @@ A10001 /* LiveZoomApp.swift in Sources */,
 A10002 /* AppDelegate.swift in Sources */,
 A10003 /* StatusBarController.swift in Sources */,
 				A10010 /* PreferencesWindowController.swift in Sources */,
+				A10011 /* UpdateManager.swift in Sources */,
 A10004 /* HotkeyManager.swift in Sources */,
 A10005 /* ZoomEngine.swift in Sources */,
 A10006 /* DrawingEngine.swift in Sources */,
@@ -296,7 +300,7 @@ LD_RUNPATH_SEARCH_PATHS = (
 "$(inherited)",
 "@executable_path/../Frameworks",
 );
-MARKETING_VERSION = 1.0;
+MARKETING_VERSION = 1.1.0;
 PRODUCT_BUNDLE_IDENTIFIER = com.livezoom.LiveZoom;
 PRODUCT_NAME = "$(TARGET_NAME)";
 SWIFT_EMIT_LOC_STRINGS = YES;
@@ -325,7 +329,7 @@ LD_RUNPATH_SEARCH_PATHS = (
 "$(inherited)",
 "@executable_path/../Frameworks",
 );
-MARKETING_VERSION = 1.0;
+MARKETING_VERSION = 1.1.0;
 PRODUCT_BUNDLE_IDENTIFIER = com.livezoom.LiveZoom;
 PRODUCT_NAME = "$(TARGET_NAME)";
 SWIFT_EMIT_LOC_STRINGS = YES;
