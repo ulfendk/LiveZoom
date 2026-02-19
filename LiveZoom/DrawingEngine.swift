@@ -37,6 +37,8 @@ class DrawingEngine {
         window.hasShadow = false
         window.ignoresMouseEvents = false
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        window.animationBehavior = .none
+        window.isReleasedWhenClosed = false
         
         let contentView = DrawingView(frame: windowRect)
         window.contentView = contentView
@@ -48,9 +50,18 @@ class DrawingEngine {
     }
     
     private func stopDrawing() {
-        drawWindow?.close()
-        drawWindow = nil
+        // Clear state immediately
         isDrawing = false
+        
+        // Hide window immediately
+        if let window = drawWindow {
+            window.orderOut(nil)
+        }
+        
+        // Delay cleanup to avoid animation crash (same as ZoomEngine)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.drawWindow = nil
+        }
     }
 }
 

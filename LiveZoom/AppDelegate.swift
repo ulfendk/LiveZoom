@@ -6,6 +6,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var hotkeyManager: HotkeyManager?
     var zoomEngine: ZoomEngine?
     var drawingEngine: DrawingEngine?
+    var preferencesWindowController: PreferencesWindowController?
     
     static func main() {
         let app = NSApplication.shared
@@ -28,6 +29,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         zoomEngine = ZoomEngine()
         drawingEngine = DrawingEngine()
         
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("ToggleZoom"), object: nil, queue: .main) { [weak self] _ in
+            self?.toggleZoomMode()
+        }
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("ToggleDraw"), object: nil, queue: .main) { [weak self] _ in
+            self?.toggleDrawMode()
+        }
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("ShowPreferences"), object: nil, queue: .main) { [weak self] _ in
+            self?.showPreferences()
+        }
+        
         setupHotkeys()
         requestPermissions()
         
@@ -40,8 +53,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        print("⚠️ applicationShouldTerminate - returning .terminateCancel")
-        return .terminateCancel
+        print("⚠️ applicationShouldTerminate - returning .terminateNow")
+        return .terminateNow
     }
     
     func setupHotkeys() {
@@ -51,14 +64,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         hotkeyManager?.registerHotkey(key: .two, modifiers: [.command]) { [weak self] in
             self?.toggleDrawMode()
-        }
-        
-        hotkeyManager?.registerHotkey(key: .three, modifiers: [.command]) { [weak self] in
-            self?.showTimer()
-        }
-        
-        hotkeyManager?.registerHotkey(key: .four, modifiers: [.command]) { [weak self] in
-            self?.toggleLiveZoom()
         }
     }
     
@@ -70,12 +75,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         drawingEngine?.toggle()
     }
     
-    func showTimer() {
-        print("Timer mode - To be implemented")
-    }
-    
-    func toggleLiveZoom() {
-        print("LiveZoom mode - To be implemented")
+    func showPreferences() {
+        if preferencesWindowController == nil {
+            preferencesWindowController = PreferencesWindowController()
+        }
+        preferencesWindowController?.showWindow(nil)
     }
     
     func requestPermissions() {

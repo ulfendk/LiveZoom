@@ -22,8 +22,6 @@ class StatusBarController {
     private func setupMenu() {
         menu.addItem(NSMenuItem(title: "Zoom (⌘1)", action: #selector(zoomAction), keyEquivalent: "1"))
         menu.addItem(NSMenuItem(title: "Draw (⌘2)", action: #selector(drawAction), keyEquivalent: "2"))
-        menu.addItem(NSMenuItem(title: "Timer (⌘3)", action: #selector(timerAction), keyEquivalent: "3"))
-        menu.addItem(NSMenuItem(title: "LiveZoom (⌘4)", action: #selector(liveZoomAction), keyEquivalent: "4"))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(preferencesAction), keyEquivalent: ","))
         menu.addItem(NSMenuItem.separator())
@@ -42,16 +40,8 @@ class StatusBarController {
         NotificationCenter.default.post(name: NSNotification.Name("ToggleDraw"), object: nil)
     }
     
-    @objc private func timerAction() {
-        NotificationCenter.default.post(name: NSNotification.Name("ShowTimer"), object: nil)
-    }
-    
-    @objc private func liveZoomAction() {
-        NotificationCenter.default.post(name: NSNotification.Name("ToggleLiveZoom"), object: nil)
-    }
-    
     @objc private func preferencesAction() {
-        print("Preferences - To be implemented")
+        NotificationCenter.default.post(name: NSNotification.Name("ShowPreferences"), object: nil)
     }
     
     @objc private func quitAction() {
