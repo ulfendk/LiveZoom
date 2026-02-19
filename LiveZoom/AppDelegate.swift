@@ -44,6 +44,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupHotkeys()
         requestPermissions()
         
+        // Start auto-update checks if enabled
+        UpdateManager.shared.startAutoUpdateCheck()
+        
         print("✅ LiveZoom started - automatic termination disabled")
     }
     

@@ -102,18 +102,25 @@ class PreferencesWindowController: NSWindowController {
         contentView.addSubview(updatesLabel)
         yPos -= 30
         
-        // Auto-update checkbox (placeholder for future implementation)
+        // Auto-update checkbox
         autoUpdateCheckbox = NSButton(checkboxWithTitle: "Automatically check for updates", target: self, action: #selector(toggleAutoUpdate(_:)))
         autoUpdateCheckbox.frame = NSRect(x: 40, y: yPos, width: 400, height: 20)
-        autoUpdateCheckbox.isEnabled = false
-        autoUpdateCheckbox.state = .off
+        autoUpdateCheckbox.state = UpdateManager.shared.isAutoUpdateEnabled() ? .on : .off
         contentView.addSubview(autoUpdateCheckbox)
+        yPos -= 30
         
-        let comingSoonLabel = NSTextField(labelWithString: "(Coming soon)")
-        comingSoonLabel.frame = NSRect(x: 60, y: yPos - 20, width: 400, height: 20)
-        comingSoonLabel.textColor = .secondaryLabelColor
-        comingSoonLabel.font = NSFont.systemFont(ofSize: 11)
-        contentView.addSubview(comingSoonLabel)
+        // Check now button
+        let checkNowButton = NSButton(title: "Check for Updates Now", target: self, action: #selector(checkForUpdatesNow))
+        checkNowButton.frame = NSRect(x: 40, y: yPos, width: 200, height: 25)
+        checkNowButton.bezelStyle = .rounded
+        contentView.addSubview(checkNowButton)
+        
+        // Current version label
+        let versionLabel = NSTextField(labelWithString: "Current version: \(UpdateManager.shared.getCurrentVersion())")
+        versionLabel.frame = NSRect(x: 250, y: yPos + 3, width: 200, height: 20)
+        versionLabel.textColor = .secondaryLabelColor
+        versionLabel.font = NSFont.systemFont(ofSize: 11)
+        contentView.addSubview(versionLabel)
     }
     
     // MARK: - Permission Checking
@@ -217,10 +224,13 @@ class PreferencesWindowController: NSWindowController {
     // MARK: - Auto-update
     
     @objc private func toggleAutoUpdate(_ sender: NSButton) {
-        // Placeholder for future implementation
         let enable = sender.state == .on
-        UserDefaults.standard.set(enable, forKey: "autoUpdate")
-        print("Auto-update preference: \(enable)")
+        UpdateManager.shared.setAutoUpdateEnabled(enable)
+        print("Auto-update \(enable ? "enabled" : "disabled")")
+    }
+    
+    @objc private func checkForUpdatesNow() {
+        UpdateManager.shared.checkForUpdates(userInitiated: true)
     }
     
     override func showWindow(_ sender: Any?) {
