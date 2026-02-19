@@ -1,13 +1,28 @@
 import Cocoa
-import SwiftUI
 
+@main
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarController: StatusBarController?
     var hotkeyManager: HotkeyManager?
     var zoomEngine: ZoomEngine?
     var drawingEngine: DrawingEngine?
     
+    static func main() {
+        let app = NSApplication.shared
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        app.run()
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Disable automatic termination completely
+        NSApplication.shared.disableRelaunchOnLogin()
+        ProcessInfo.processInfo.disableAutomaticTermination("LiveZoom is a menu bar app")
+        ProcessInfo.processInfo.disableSuddenTermination()
+        
+        // Set as accessory app (menu bar only, no dock icon)
+        NSApp.setActivationPolicy(.accessory)
+        
         statusBarController = StatusBarController()
         hotkeyManager = HotkeyManager()
         zoomEngine = ZoomEngine()
@@ -15,10 +30,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         setupHotkeys()
         requestPermissions()
+        
+        print("✅ LiveZoom started - automatic termination disabled")
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        print("⚠️ applicationShouldTerminateAfterLastWindowClosed - returning false")
         return false
+    }
+    
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        print("⚠️ applicationShouldTerminate - returning .terminateCancel")
+        return .terminateCancel
     }
     
     func setupHotkeys() {

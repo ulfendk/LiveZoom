@@ -8,6 +8,7 @@ class ZoomEngine {
     private var zoomCenter: CGPoint = .zero
     private var eventMonitor: Any?
     private var screenshot: CGImage?
+    private var zoomView: ZoomView?  // Keep strong reference to prevent dealloc
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(toggle), name: NSNotification.Name("ToggleZoom"), object: nil)
@@ -18,10 +19,15 @@ class ZoomEngine {
     }
     
     @objc func toggle() {
+        print("🔄 ZoomEngine.toggle() called - isZooming: \(isZooming)")
         if isZooming {
+            print("📴 Stopping zoom...")
             stopZoom()
+            print("✅ Zoom stopped")
         } else {
+            print("📹 Starting zoom...")
             startZoom()
+            print("✅ Zoom started")
         }
     }
     
@@ -79,7 +85,7 @@ class ZoomEngine {
         
         // Create fullscreen window - use custom window class to prevent it from becoming key
         let windowRect = screen.frame
-        let window = NonActivatingWindow(
+        let window = NSWindow(
             contentRect: windowRect,
             styleMask: [.borderless],
             backing: .buffered,
@@ -93,12 +99,17 @@ class ZoomEngine {
         window.hasShadow = false
         window.ignoresMouseEvents = true
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
+        window.animationBehavior = .none
+        window.isReleasedWhenClosed = false  // Important - we manage memory manually
         
         let contentView = ZoomView(frame: windowRect)
         contentView.screenshot = screenshot
         contentView.zoomLevel = zoomLevel
         contentView.zoomCenter = zoomCenter
         window.contentView = contentView
+        
+        // Keep strong reference to view
+        self.zoomView = contentView
         
         // Order front without making key (since NonActivatingWindow prevents becoming key)
         window.orderFront(nil)
@@ -113,14 +124,32 @@ class ZoomEngine {
     }
     
     private func stopZoom() {
+        print("🛑 stopZoom() called")
+        
+        // Remove event monitor immediately
         if let monitor = eventMonitor {
             NSEvent.removeMonitor(monitor)
             eventMonitor = nil
+            print("  - Event monitor removed")
         }
-        zoomWindow?.close()
-        zoomWindow = nil
-        screenshot = nil
+        
+        // Clear state immediately
         isZooming = false
+        
+        // Hide window immediately
+        if let window = zoomWindow {
+            window.orderOut(nil)
+            print("  - Window hidden")
+        }
+        
+        // Delay cleanup to avoid animation crash
+        // Let the runloop finish processing before deallocating
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.zoomWindow = nil
+            self?.zoomView = nil
+            self?.screenshot = nil
+            print("  - Delayed cleanup complete")
+        }
     }
     
     private func handleEvent(_ event: NSEvent) {
@@ -280,6 +309,12 @@ class ZoomEngine {
 class NonActivatingWindow: NSWindow {
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
+    
+    // Prevent animation issues that cause crashes on dealloc
+    override var animationBehavior: NSWindow.AnimationBehavior {
+        get { .none }
+        set { }
+    }
 }
 
 class ZoomView: NSView {
