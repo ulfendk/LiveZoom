@@ -100,7 +100,8 @@ class ZoomEngine {
         contentView.zoomCenter = zoomCenter
         window.contentView = contentView
         
-        window.makeKeyAndOrderFront(nil)
+        // Order front without making key (since NonActivatingWindow prevents becoming key)
+        window.orderFront(nil)
         
         zoomWindow = window
         isZooming = true

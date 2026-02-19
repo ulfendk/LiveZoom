@@ -56,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func requestPermissions() {
-        // Check accessibility permission without prompting first
+        // Check accessibility permission silently first
         let accessEnabled = AXIsProcessTrusted()
         
         if !accessEnabled {
@@ -68,13 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("✅ Accessibility permission granted")
         }
         
-        // Note: Screen Recording permission can't be reliably detected until first capture attempt
-        // macOS will prompt automatically when we try to capture
-    }
-    
-    func checkScreenRecordingPermission() {
-        // This function is now called only when needed, not on every launch
-        // Screen Recording permission is checked lazily when zoom is first activated
-        print("ℹ️ Screen Recording permission will be requested on first zoom if needed")
+        // Screen Recording permission is checked when zoom is first activated
+        // macOS will prompt automatically on first capture attempt
     }
 }
