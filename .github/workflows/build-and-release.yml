@@ -1,0 +1,91 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build LiveZoom
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      
+      - name: Build app
+        run: |
+          xcodebuild -project LiveZoom.xcodeproj \
+            -scheme LiveZoom \
+            -configuration Release \
+            -derivedDataPath DerivedData \
+            build
+      
+      - name: Create DMG
+        run: |
+          # Create a temporary directory for DMG contents
+          mkdir -p dmg_temp
+          
+          # Copy the built app
+          cp -R DerivedData/Build/Products/Release/LiveZoom.app dmg_temp/
+          
+          # Create Applications symlink
+          ln -s /Applications dmg_temp/Applications
+          
+          # Create DMG
+          hdiutil create -volname "LiveZoom" \
+            -srcfolder dmg_temp \
+            -ov -format UDZO \
+            LiveZoom.dmg
+      
+      - name: Get version
+        id: version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "version=dev-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            LiveZoom.dmg
+          body: |
+            ## LiveZoom ${{ steps.version.outputs.version }}
+            
+            ### Installation
+            1. Download `LiveZoom.dmg`
+            2. Open the DMG and drag LiveZoom.app to Applications
+            3. Launch LiveZoom from Applications
+            4. Grant Accessibility and Screen Recording permissions when prompted
+            
+            ### Usage
+            - **⌘1** - Activate zoom mode (move mouse to pan, scroll to zoom, ⌘1 again to exit)
+            - **⌘2** - Activate drawing mode (draw with mouse, ESC to exit)
+            
+            ### Notes
+            - This build uses ad-hoc code signing (no developer certificate)
+            - You may need to grant permissions in System Settings after first launch
+            - See [TROUBLESHOOTING.md](https://github.com/${{ github.repository }}/blob/main/TROUBLESHOOTING.md) for common issues
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload artifact
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: LiveZoom-${{ steps.version.outputs.version }}
+          path: LiveZoom.dmg
+          retention-days: 30

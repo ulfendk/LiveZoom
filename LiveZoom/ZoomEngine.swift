@@ -42,11 +42,22 @@ class ZoomEngine {
         
         screenshot = capturedImage
         
-        // Set initial zoom center to mouse position
-        let mouseLocation = NSEvent.mouseLocation
-        
+        // DEBUG: Print dimensions
+        let screenWidth = screen.frame.width
+        let screenHeight = screen.frame.height
         let imageWidth = CGFloat(capturedImage.width)
         let imageHeight = CGFloat(capturedImage.height)
+        let backingScale = screen.backingScaleFactor
+        
+        print("=== Zoom Debug ===")
+        print("Screen (points): \(screenWidth) x \(screenHeight)")
+        print("Image (pixels): \(imageWidth) x \(imageHeight)")
+        print("Backing scale: \(backingScale)")
+        print("Calculated scaleX: \(imageWidth / screenWidth)")
+        print("Calculated scaleY: \(imageHeight / screenHeight)")
+        
+        // Set initial zoom center to mouse position
+        let mouseLocation = NSEvent.mouseLocation
         
         // Convert screen points to image coordinates
         // The captured image dimensions should match screen dimensions
@@ -61,6 +72,10 @@ class ZoomEngine {
             x: pointX * scaleX,
             y: pointY * scaleY
         )
+        
+        print("Initial center: \(zoomCenter)")
+        print("==================")
+
         
         // Create fullscreen window - use custom window class to prevent it from becoming key
         let windowRect = screen.frame
@@ -151,12 +166,9 @@ class ZoomEngine {
             y: pointY * scaleY
         )
         
-        // Calculate visible area in pixels
-        let viewWidthPixels = screen.frame.width * scaleX
-        let viewHeightPixels = screen.frame.height * scaleY
-        
-        let visibleWidth = viewWidthPixels / zoomLevel
-        let visibleHeight = viewHeightPixels / zoomLevel
+        // Calculate visible area in IMAGE PIXELS (not screen points!)
+        let visibleWidth = imageWidth / zoomLevel
+        let visibleHeight = imageHeight / zoomLevel
         
         // Clamp to ensure we never show black bars
         newCenter.x = max(visibleWidth / 2, min(newCenter.x, imageWidth - visibleWidth / 2))
@@ -178,19 +190,14 @@ class ZoomEngine {
         if let contentView = zoomWindow?.contentView as? ZoomView {
             contentView.zoomLevel = zoomLevel
             
-            // Calculate scale from screen to image
             let imageWidth = CGFloat(screenshot.width)
             let imageHeight = CGFloat(screenshot.height)
-            let scaleX = imageWidth / screen.frame.width
-            let scaleY = imageHeight / screen.frame.height
             
-            // After zoom change, re-clamp the center to prevent black bars
-            let viewWidthPixels = screen.frame.width * scaleX
-            let viewHeightPixels = screen.frame.height * scaleY
+            // Calculate visible area in IMAGE PIXELS
+            let visibleWidth = imageWidth / zoomLevel
+            let visibleHeight = imageHeight / zoomLevel
             
-            let visibleWidth = viewWidthPixels / zoomLevel
-            let visibleHeight = viewHeightPixels / zoomLevel
-            
+            // Re-clamp center after zoom change
             zoomCenter.x = max(visibleWidth / 2, min(zoomCenter.x, imageWidth - visibleWidth / 2))
             zoomCenter.y = max(visibleHeight / 2, min(zoomCenter.y, imageHeight - visibleHeight / 2))
             
@@ -205,18 +212,13 @@ class ZoomEngine {
         
         let imageWidth = CGFloat(screenshot.width)
         let imageHeight = CGFloat(screenshot.height)
-        let scaleX = imageWidth / screen.frame.width
-        let scaleY = imageHeight / screen.frame.height
         
-        // Calculate visible area in pixels
-        let viewWidthPixels = screen.frame.width * scaleX
-        let viewHeightPixels = screen.frame.height * scaleY
+        // Calculate visible area in IMAGE PIXELS
+        let visibleWidth = imageWidth / zoomLevel
+        let visibleHeight = imageHeight / zoomLevel
         
-        let visibleWidth = viewWidthPixels / zoomLevel
-        let visibleHeight = viewHeightPixels / zoomLevel
-        
-        // Move by fixed amount
-        let moveAmount: CGFloat = 50
+        // Move by 10% of visible area
+        let moveAmount: CGFloat = min(visibleWidth, visibleHeight) * 0.1
         
         switch event.keyCode {
         case 126: // Up
@@ -314,28 +316,30 @@ class ZoomView: NSView {
         
         context.saveGState()
         
+        // The image is in pixels, but the view bounds are in points
+        // We need to work entirely in the image's pixel coordinate system
+        let imageWidth = CGFloat(screenshot.width)
+        let imageHeight = CGFloat(screenshot.height)
+        
+        // Calculate the scale from view points to image pixels
+        let scaleToImage = imageWidth / bounds.width
+        
         // Transform: center on screen, zoom, then translate to focus on zoomCenter
+        // All in the view's point coordinate system
         context.translateBy(x: bounds.width / 2, y: bounds.height / 2)
         context.scaleBy(x: zoomLevel, y: zoomLevel)
-        context.translateBy(x: -zoomCenter.x, y: -zoomCenter.y)
         
-        // Draw the screenshot
-        let imageRect = CGRect(x: 0, y: 0, width: CGFloat(screenshot.width), height: CGFloat(screenshot.height))
+        // Convert zoomCenter from image pixels to view points for the translation
+        let centerInPoints = CGPoint(
+            x: zoomCenter.x / scaleToImage,
+            y: zoomCenter.y / scaleToImage
+        )
+        context.translateBy(x: -centerInPoints.x, y: -centerInPoints.y)
+        
+        // Draw the screenshot - it will be scaled to fit the view bounds automatically
+        let imageRect = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
         context.draw(screenshot, in: imageRect)
         
         context.restoreGState()
-        
-        // Draw crosshair on top
-        context.setStrokeColor(NSColor.white.cgColor)
-        context.setLineWidth(2)
-        let crosshairSize: CGFloat = 20
-        let centerX = bounds.width / 2
-        let centerY = bounds.height / 2
-        
-        context.move(to: CGPoint(x: centerX - crosshairSize, y: centerY))
-        context.addLine(to: CGPoint(x: centerX + crosshairSize, y: centerY))
-        context.move(to: CGPoint(x: centerX, y: centerY - crosshairSize))
-        context.addLine(to: CGPoint(x: centerX, y: centerY + crosshairSize))
-        context.strokePath()
     }
 }
