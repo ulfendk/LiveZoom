@@ -13,6 +13,7 @@ A10003 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef
 A10004 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20004 /* HotkeyManager.swift */; };
 A10005 /* ZoomEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20005 /* ZoomEngine.swift */; };
 A10006 /* DrawingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20006 /* DrawingEngine.swift */; };
+		A10010 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20010 /* PreferencesWindowController.swift */; };
 A10007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20007 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -21,6 +22,7 @@ A30001 /* LiveZoom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.
 A20001 /* LiveZoomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveZoomApp.swift; sourceTree = "<group>"; };
 A20002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 A20003 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
+		A20010 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 A20004 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 A20005 /* ZoomEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomEngine.swift; sourceTree = "<group>"; };
 A20006 /* DrawingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingEngine.swift; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@ children = (
 A20001 /* LiveZoomApp.swift */,
 A20002 /* AppDelegate.swift */,
 A20003 /* StatusBarController.swift */,
+				A20010 /* PreferencesWindowController.swift */,
 A20004 /* HotkeyManager.swift */,
 A20005 /* ZoomEngine.swift */,
 A20006 /* DrawingEngine.swift */,
@@ -144,6 +147,7 @@ files = (
 A10001 /* LiveZoomApp.swift in Sources */,
 A10002 /* AppDelegate.swift in Sources */,
 A10003 /* StatusBarController.swift in Sources */,
+				A10010 /* PreferencesWindowController.swift in Sources */,
 A10004 /* HotkeyManager.swift in Sources */,
 A10005 /* ZoomEngine.swift in Sources */,
 A10006 /* DrawingEngine.swift in Sources */,
