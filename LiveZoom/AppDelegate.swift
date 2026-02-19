@@ -1,13 +1,28 @@
 import Cocoa
-import SwiftUI
 
+@main
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusBarController: StatusBarController?
     var hotkeyManager: HotkeyManager?
     var zoomEngine: ZoomEngine?
     var drawingEngine: DrawingEngine?
     
+    static func main() {
+        let app = NSApplication.shared
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        app.run()
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Disable automatic termination completely
+        NSApplication.shared.disableRelaunchOnLogin()
+        ProcessInfo.processInfo.disableAutomaticTermination("LiveZoom is a menu bar app")
+        ProcessInfo.processInfo.disableSuddenTermination()
+        
+        // Set as accessory app (menu bar only, no dock icon)
+        NSApp.setActivationPolicy(.accessory)
+        
         statusBarController = StatusBarController()
         hotkeyManager = HotkeyManager()
         zoomEngine = ZoomEngine()
@@ -15,10 +30,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         setupHotkeys()
         requestPermissions()
+        
+        print("✅ LiveZoom started - automatic termination disabled")
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        print("⚠️ applicationShouldTerminateAfterLastWindowClosed - returning false")
         return false
+    }
+    
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        print("⚠️ applicationShouldTerminate - returning .terminateCancel")
+        return .terminateCancel
     }
     
     func setupHotkeys() {
@@ -56,7 +79,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func requestPermissions() {
-        // Check accessibility permission without prompting first
+        // Check accessibility permission silently first
         let accessEnabled = AXIsProcessTrusted()
         
         if !accessEnabled {
@@ -68,13 +91,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("✅ Accessibility permission granted")
         }
         
-        // Note: Screen Recording permission can't be reliably detected until first capture attempt
-        // macOS will prompt automatically when we try to capture
-    }
-    
-    func checkScreenRecordingPermission() {
-        // This function is now called only when needed, not on every launch
-        // Screen Recording permission is checked lazily when zoom is first activated
-        print("ℹ️ Screen Recording permission will be requested on first zoom if needed")
+        // Screen Recording permission is checked when zoom is first activated
+        // macOS will prompt automatically on first capture attempt
     }
 }

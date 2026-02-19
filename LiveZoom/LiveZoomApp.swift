@@ -1,12 +1,3 @@
-import SwiftUI
+import Cocoa
 
-@main
-struct LiveZoomApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
-    var body: some Scene {
-        Settings {
-            EmptyView()
-        }
-    }
-}
+// Empty - not used, AppDelegate has @main now
