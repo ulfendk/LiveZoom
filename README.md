@@ -2,6 +2,26 @@
 
 A macOS screen zoom, annotation, and presentation tool inspired by ZoomIt for Windows.
 
+## ⚠️ NB! First-Time Setup
+
+When you first run LiveZoom (especially if built locally or downloaded), macOS Gatekeeper may prevent it from opening with a message like *"LiveZoom.app cannot be opened because it is from an unidentified developer"*.
+
+**To authorize the app:**
+
+1. **Locate the app** in Finder (usually in `~/Applications/` or `/Applications/`)
+2. **Right-click (or Control-click)** on `LiveZoom.app`
+3. Select **"Open"** from the context menu
+4. In the dialog that appears, click **"Open"** again to confirm
+5. The app will now run and be authorized for future launches
+
+Alternatively, you can authorize it via System Settings:
+1. Go to **System Settings** → **Privacy & Security**
+2. Scroll down to find the message about LiveZoom being blocked
+3. Click **"Open Anyway"**
+4. Confirm by clicking **"Open"** in the dialog
+
+After this one-time authorization, LiveZoom will launch normally in the future.
+
 ## Features
 
 ### Currently Implemented ✅
