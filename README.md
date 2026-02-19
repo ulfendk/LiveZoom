@@ -46,18 +46,6 @@ After this one-time authorization, LiveZoom will launch normally in the future.
 - **Global Hotkeys**: Access features from anywhere with keyboard shortcuts
 - **Accessibility Support**: Automatically requests necessary permissions
 
-### Coming Soon 🚧
-
-- Advanced drawing tools (lines, rectangles, ellipses, arrows)
-- Text typing mode
-- Whiteboard/Blackboard mode
-- Screenshot capture (clipboard and file)
-- Screen recording (MP4/GIF)
-- Break timer for presentations
-- LiveZoom mode (cursor-following zoom)
-- DemoType (code snippet display)
-- Preferences window
-
 ## Installation
 
 ### Requirements
