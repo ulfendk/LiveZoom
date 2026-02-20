@@ -9,6 +9,7 @@ class ZoomEngine {
     private var eventMonitor: Any?
     private var screenshot: CGImage?
     private var zoomView: ZoomView?  // Keep strong reference to prevent dealloc
+    private var activeScreen: NSScreen?
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(toggle), name: NSNotification.Name("ToggleZoom"), object: nil)
@@ -37,10 +38,13 @@ class ZoomEngine {
             return
         }
         
-        guard let screen = NSScreen.main else { return }
+        // Use the screen where the cursor currently is
+        let mouseLocation = NSEvent.mouseLocation
+        guard let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) ?? NSScreen.main else { return }
+        activeScreen = screen
         
         // Capture screen ONCE before showing zoom window
-        let displayID = CGMainDisplayID()
+        let displayID = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID ?? CGMainDisplayID()
         guard let capturedImage = CGDisplayCreateImage(displayID) else {
             showPermissionAlert()
             return
@@ -63,7 +67,7 @@ class ZoomEngine {
         print("Calculated scaleY: \(imageHeight / screenHeight)")
         
         // Set initial zoom center to mouse position
-        let mouseLocation = NSEvent.mouseLocation
+        // (mouseLocation was already captured above for screen detection)
         
         // Convert screen points to image coordinates
         // The captured image dimensions should match screen dimensions
@@ -148,6 +152,7 @@ class ZoomEngine {
             self?.zoomWindow = nil
             self?.zoomView = nil
             self?.screenshot = nil
+            self?.activeScreen = nil
             print("  - Delayed cleanup complete")
         }
     }
@@ -174,7 +179,7 @@ class ZoomEngine {
     }
     
     private func updateZoomCenter() {
-        guard let screen = NSScreen.main else { return }
+        guard let screen = activeScreen else { return }
         guard let contentView = zoomWindow?.contentView as? ZoomView else { return }
         guard let screenshot = screenshot else { return }
         
@@ -210,7 +215,7 @@ class ZoomEngine {
     }
     
     private func handleScroll(_ event: NSEvent) {
-        guard let screen = NSScreen.main else { return }
+        guard activeScreen != nil else { return }
         guard let screenshot = screenshot else { return }
         
         let oldZoomLevel = zoomLevel
@@ -237,7 +242,7 @@ class ZoomEngine {
     }
     
     private func handleKeyPress(_ event: NSEvent) {
-        guard let screen = NSScreen.main else { return }
+        guard activeScreen != nil else { return }
         guard let screenshot = screenshot else { return }
         
         let imageWidth = CGFloat(screenshot.width)
